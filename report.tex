@@ -1,0 +1,70 @@
+% !TEX encoding = UTF-8
+
+\documentclass{article}
+\usepackage{luatexja-fontspec}
+\setmainjfont{SimSun}
+
+\usepackage[T1]{fontenc}
+\usepackage{beramono}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\title{VF2算法实现报告}
+\author{郑淇木  1501214427}
+\date{\today}
+
+\usepackage{xcolor}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstdefinestyle{mStyle}{
+  frame=tb,
+  language=scala,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  %numbers=none,
+  numbers=left,
+  numbersep=5pt,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  frame=single,
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2,
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+在本次课程作业中，我使用Scala语言对（子）图同构判定算法VF2进行了实现，并对作业中需要完成的给定图数据库面向查询文件完成批量图匹配进行了并行化处理。
+
+\end{abstract}
+
+
+\section{Introduction}
+本次作业的主要内容是理解并实现解决（子）图同构判定问题的VF2算法\cite{vf2}。
+VF2简介
+
+在本项目中，我使用了Scala语言完成了VF2算法的实现，并尝试将批量查询进行并行化处理以提高运行效率。
+本报告将对算法的实现方式、所使用数据等方面进行介绍。Section ？介绍了算法所使用的数据结构，。。。
+
+项目地址： https://github.com/zhengqm/VF2-Scala
+
+
+\begin{thebibliography}{9}
+
+\bibitem{vf2}
+  todo
+
+\end{thebibliography}
+
+\end{document}

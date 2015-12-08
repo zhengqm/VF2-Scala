@@ -4,9 +4,9 @@
 
 package vf2.dataStructure {
 
-import scala.collection.mutable
+import scala.collection.{SortedMap, mutable}
 
-case class Edge(label: Int, toVertex: Int)
+  case class Edge(label: Int, toVertex: Int)
 
   class Graph(val graphID: Int, val vertexIdToLabel: Map[Int, Int]
                , immutableNeighbourVertex: Map[Int, Set[Int]]
@@ -44,25 +44,18 @@ case class Edge(label: Int, toVertex: Int)
 
 
     def check_isomorphism(): Option[Found] = {
-
-      inner_check(0)
-      if (core_2.size == G2.vertexNumber) {
-        if (core_1.size == G1.vertexNumber) {
-          Option(Iso(G1.graphID))
-        } else {
-          Option(SubIso(G1.graphID))
-        }
-      } else {
-        None
-      }
+      return inner_check(0)
     }
 
 
 
-    def inner_check(depth: Int): Unit = {
-      // Run ...
+    def inner_check(depth: Int): Option[Found] = {
       if (core_2.size == G2.vertexNumber){
-        return
+        if (core_1.size == G1.vertexNumber) {
+          return Option(Iso(G1.graphID, SortedMap(core_2.toSeq:_*)))
+        } else {
+          return Option(SubIso(G1.graphID, SortedMap(core_2.toSeq:_*)))
+        }
       }
 
       val candidatePairs = generateCandidatePairs()
@@ -84,7 +77,11 @@ case class Edge(label: Int, toVertex: Int)
             .foreach(v => inout_2.put(v, depth))
 
           // Call recursively
-          inner_check(depth + 1)
+          val result = inner_check(depth + 1)
+          if (result != None) {
+            return result
+          }
+
 
           // Restore state
           core_1.remove(G1_node)
@@ -95,14 +92,14 @@ case class Edge(label: Int, toVertex: Int)
         }
 
       }
-
+      None
     }
 
     def generateCandidatePairs() = {
       val T1_inout = inout_1.keys.filter(id => !core_1.contains(id))
       val T2_inout = inout_2.keys.filter(id => !core_2.contains(id))
 
-      if (T2_inout.isEmpty) {
+      if (T2_inout.nonEmpty) {
         val T2_selected = T2_inout.min
         T1_inout.map{id => (id, T2_selected) }
       } else {
@@ -141,7 +138,7 @@ case class Edge(label: Int, toVertex: Int)
       val G1_num = G1.getEdges(G1_node)
                       .count( e => inout_1.contains(e.toVertex) && !core_1.contains(e.toVertex))
       val G2_num = G2.getEdges(G2_node)
-                      .count( e => inout_1.contains(e.toVertex) && !core_1.contains(e.toVertex))
+                      .count( e => inout_2.contains(e.toVertex) && !core_2.contains(e.toVertex))
 
       if (G1_num < G2_num) {
         return false
@@ -161,7 +158,7 @@ case class Edge(label: Int, toVertex: Int)
     def semantic_feasibility(G1_node: Int, G2_node: Int): Boolean = {
 
       // Node
-      if (G1.vertexIdToLabel.get(G1_node).get != G2.vertexIdToLabel.get(G2_node)) {
+      if (G1.vertexIdToLabel.get(G1_node).get != G2.vertexIdToLabel.get(G2_node).get) {
         return false
       }
 
@@ -178,8 +175,8 @@ case class Edge(label: Int, toVertex: Int)
     }
 
   sealed trait Found
-  case class Iso(graphID: Int) extends Found
-  case class SubIso(graphID: Int) extends Found
+  case class Iso(graphID: Int, mapping: SortedMap[Int, Int]) extends Found
+  case class SubIso(graphID: Int, mapping: SortedMap[Int, Int]) extends Found
 
 
 
