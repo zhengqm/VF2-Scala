@@ -23,13 +23,6 @@ import scala.collection.{SortedMap, mutable}
       immutableNeighbourVertex.get(id).get
     }
 
-    def getNeighbourWithLabel(id: Int) = {
-      immutableNeighbourVertex.get(id)
-                              .get
-                              .map(vid => (vid, vertexIdToLabel.get(vid).get))
-
-    }
-
   }
 
 
@@ -44,7 +37,7 @@ import scala.collection.{SortedMap, mutable}
 
 
     def check_isomorphism(): Option[Found] = {
-      return inner_check(0)
+      inner_check(0)
     }
 
 
@@ -78,7 +71,7 @@ import scala.collection.{SortedMap, mutable}
 
           // Call recursively
           val result = inner_check(depth + 1)
-          if (result != None) {
+          if (result.isDefined) {
             return result
           }
 

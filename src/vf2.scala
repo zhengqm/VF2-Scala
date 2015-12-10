@@ -51,7 +51,10 @@ package vf2 {
       val queryGraphs = loadDataFile(queryFile)
 
       val queryResults = queryGraphs.foreach { qGraph =>
-        val qResult = graphDB.map(g => new GraphMatcher(g, qGraph).check_isomorphism()).filter(_.isDefined).map(_.get).toList
+        val qResult = graphDB.map(g => new GraphMatcher(g, qGraph).check_isomorphism())
+                             .filter(_.isDefined)
+                             .map(_.get)
+                             .toList
         // List[Found] to represent the search result
 
         printResult(qGraph.graphID, qResult)

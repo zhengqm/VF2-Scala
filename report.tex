@@ -45,7 +45,7 @@
 \maketitle
 
 \begin{abstract}
-在本次课程作业中，我使用Scala语言对（子）图同构判定算法VF2进行了实现，并对作业中需要完成的给定图数据库面向查询文件完成批量图匹配进行了并行化处理。
+在本次课程作业中，我使用Scala语言对（子）图同构判定算法VF2进行了实现，并对作业中需要完成的给定图数据库文件面向查询图完成批量图匹配进行了并行化处理。
 
 \end{abstract}
 
@@ -59,6 +59,39 @@ VF2简介
 
 项目地址： https://github.com/zhengqm/VF2-Scala
 
+\section{Data Structure}
+
+\section{Algorithm Implementation}
+
+基于所定义的数据结构，项目对VF2算法的核心进行了实现。VF2算法的核心是将图匹配的过程抽象为一系列状态转移，并在每一步转移中检查所提出的转移选项是否满足一系列先验条件。算法实现的核心即为对这些先验条件进行实现，所实现的检查主要分为两类：图结构的可行性（syntactic_feasibility）及图语意的可行性（semantic_feasibility）。
+
+对于语意上的可行性，主要考虑候选匹配的节点label及与之相连的边的label是否匹配，及原文中所给出的：
+
+在具体实现中，我利用了Scala语言集合中所提供的forall、exists等操作，将上述数学表达式关于边的label的限制自然地映射为下列实现代码：
+\begin{lstlisting}[style=mStyle]
+G1.getEdges(G1_node)
+  .filter(edge => core_1.contains(edge.toVertex))
+  .forall{ edge =>
+    val m_prime = core_1.get(edge.toVertex).get
+    G2.getEdges(m_prime).exists(e => e.toVertex == G2_node && e.label == edge.label)
+  }
+\end{lstlisting}
+
+
+\sectoin{Parallel Execution}
+
+在完成对算法的基本实现后，作业要求对给定的图数据库文件面向查询图进行批量匹配。
+
+考虑到对于一个待查询的图，将其与图数据库中各图的匹配过程是相互独立且容易并行的，本实现对这一过程进行了并行化处理。对于一待查询图qGraph，我们将图数据库列表转换为并行列表（ParSeq），并对该并行列表调用map操作对qGraph进行匹配，最后将匹配失败的结果去除，将匹配结果转换为普通列表作为查询结果并进行输出。这一数据并行方案能够有效并可靠地提高多核CPU的使用率，提升算法运行的效率。
+
+\begin{lstlisting}[style=mStyle]
+val qResult = graphDB.par
+                     .map(g => new GraphMatcher(g, qGraph).check_isomorphism())
+                     .filter(_.isDefined)
+                     .map(_.get)
+                     .toList
+printResult(qGraph.graphID, qResult)
+\end{lstlisting}
 
 \begin{thebibliography}{9}
 
