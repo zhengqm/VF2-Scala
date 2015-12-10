@@ -1,4 +1,4 @@
-# gSpan-VF2
+# VF2-Scala
 
 A paralleled implementation of VF2 algorithm in Scala
 
