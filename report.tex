@@ -61,11 +61,53 @@ VF2简介
 
 \section{Data Structure}
 
+算法实现使用了一个简单的数据类型表示匹配结果：
+
+\begin{lstlisting}[style=mStyle]
+sealed trait Found
+case class Iso(graphID: Int, mapping: SortedMap[Int, Int]) extends Found
+case class SubIso(graphID: Int, mapping: SortedMap[Int, Int]) extends Found
+\end{lstlisting}
+
+其中Iso、SubIso分别返回了当（子）图同构匹配成功时目标图的ID及相应的映射。
+
+算法实现使用了如下数据结构表示一张图，其中包含了节点label、节点邻居节点、节点相邻边等信息：
+
+\begin{lstlisting}[style=mStyle]
+class Graph(val graphID: Int, val vertexIdToLabel: Map[Int, Int]
+             , immutableNeighbourVertex: Map[Int, Set[Int]]
+             , immutableNeighbourEdges: Map[Int, Set[Edge]]) {
+
+  val vertexNumber = vertexIdToLabel.size
+  val vertexIDs = vertexIdToLabel.keys.toList
+
+  def getEdges(id: Int) = {
+    immutableNeighbourEdges.get(id).get
+  }
+
+  def getNeighbour(id: Int) = {
+    immutableNeighbourVertex.get(id).get
+  }
+}
+\end{lstlisting}
+
+最后，对于算法依赖的核心数据结构，我们使用了不同的实现方式：
+
+\begin{lstlisting}[style=mStyle]
+val core_1 = mutable.Map[Int, Int]()
+val core_2 = mutable.Map[Int, Int]()
+
+var inout_1 = mutable.Map[Int, Int]()
+var inout_2 = mutable.Map[Int, Int]()
+\end{lstlisting}
+
+论文中给出的提示是使用vector对上述数据进行存储，而本算法实现使用了Map对数据进行存储。使用Map的好处是不用单独考虑空数据如何存放，且可以通过设定Value中存放的内容简化状态的回溯（在本实现中，代码在inout\_1中存放的是递归调用的深度）。
+
 \section{Algorithm Implementation}
 
-基于所定义的数据结构，项目对VF2算法的核心进行了实现。VF2算法的核心是将图匹配的过程抽象为一系列状态转移，并在每一步转移中检查所提出的转移选项是否满足一系列先验条件。算法实现的核心即为对这些先验条件进行实现，所实现的检查主要分为两类：图结构的可行性（syntactic_feasibility）及图语意的可行性（semantic_feasibility）。
+基于所定义的数据结构，项目对VF2算法的核心进行了实现。VF2算法的核心是将图匹配的过程抽象为一系列状态转移，并在每一步转移中检查所提出的转移选项是否满足一系列先验条件。算法实现的核心即为对这些先验条件进行实现，所实现的检查主要分为两类：图结构的可行性（syntactic feasibility）及图语意的可行性（semantic feasibility）。
 
-对于语意上的可行性，主要考虑候选匹配的节点label及与之相连的边的label是否匹配，及原文中所给出的：
+对于语意上的可行性，主要考虑候选匹配的节点label及与之相连的边的label是否匹配，即原文中所给出的：
 
 在具体实现中，我利用了Scala语言集合中所提供的forall、exists等操作，将上述数学表达式关于边的label的限制自然地映射为下列实现代码：
 \begin{lstlisting}[style=mStyle]
@@ -77,6 +119,43 @@ G1.getEdges(G1_node)
   }
 \end{lstlisting}
 
+对于图结构的可行性中的各种条件，我们将文中的数学表达式自然地转换为Scala中的filter、map、forall、exists操作及lambda表达式进行描述。例如对于文中的Pred、Succ条件，我们有：
+
+\begin{lstlisting}[style=mStyle]
+val G1_check = G1.getEdges(G1_node)
+  .filter(edge => core_1.contains(edge.toVertex))
+  .map {edge => edge.toVertex}
+  .map {n_prime => core_1.get(n_prime).get}
+  .forall {m_prime => G2.getEdges(G2_node).exists(e => e.toVertex == m_prime)}
+\end{lstlisting}
+
+而对于In、Out、New等条件，我们有：
+
+\begin{lstlisting}[style=mStyle]
+val G1_num = G1.getEdges(G1_node)
+               .count( e => inout_1.contains(e.toVertex) && !core_1.contains(e.toVertex))
+
+val G1_new = G1.getEdges(G1_node)
+               .count( e =>  !inout_1.contains(e.toVertex))
+\end{lstlisting}
+
+除了实现同构可行条件的判定之外，算法还需实现对候选匹配的生成，我们使用了论文中的候选匹配生成的思路，将其实现如下：
+
+\begin{lstlisting}[style=mStyle]
+def generateCandidatePairs() = {
+  val T1_inout = inout_1.keys.filter(id => !core_1.contains(id))
+  val T2_inout = inout_2.keys.filter(id => !core_2.contains(id))
+
+  if (T2_inout.nonEmpty) {
+    val T2_selected = T2_inout.min
+    T1_inout.map{id => (id, T2_selected) }
+  } else {
+    val otherNode = G2.vertexIDs.filter(id => !core_2.contains(id)).min
+    G1.vertexIDs.filter(id => !core_1.contains(id)).map {id => (id, otherNode)}
+  }
+\end{lstlisting}
+
+在此基础上，只需将论文中的算法主流程简单的翻译为一个递归调用自身的函数即完成了对算法的实现。总体而言，VF2算法的核心是将图的匹配过程抽象为状态转移的过程，并给出了图同构问题的多个限定条件，我们使用一系列集合操作将这些限定条件进行了实现。
 
 \sectoin{Parallel Execution}
 
@@ -96,7 +175,7 @@ printResult(qGraph.graphID, qResult)
 \begin{thebibliography}{9}
 
 \bibitem{vf2}
-  todo
+   Luigi P. Cordella,Pasquale Foggia,Carlo Sansone,Mario Vento: \emph{A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs.} IEEE Trans. Pattern Anal. Mach. Intell. 26(10): 1367-1372 (2004)
 
 \end{thebibliography}
 
