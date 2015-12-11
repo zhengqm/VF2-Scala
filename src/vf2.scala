@@ -32,7 +32,7 @@ package vf2 {
     }
 
     def main(args: Array[String]) {
-      if (args.size != 3) {
+      if (args.size != 4) {
         println("Usage: java -jar VF2-Scala.jar [Graph DB File] [Query File] [Number of threads]")
         println("Example: java -jar VF2-Scala.jar mygraphdb.data Q4.my 8")
         return
@@ -44,6 +44,7 @@ package vf2 {
       val databaseFile = args(0)
       val queryFile = args(1)
       val threads = args(2).toInt
+      val verbose = args(3).toBoolean
 
       setParallelismGlobally(threads)
 
@@ -57,7 +58,7 @@ package vf2 {
                              .toList
         // List[Found] to represent the search result
 
-        printResult(qGraph.graphID, qResult)
+        printResult(qGraph.graphID, qResult, verbose)
 
       }
 

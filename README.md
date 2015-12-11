@@ -10,11 +10,11 @@ A paralleled implementation of VF2 algorithm in Scala
 ## Try it
 
 ```bash
-java -jar VF2-Scala.jar [Graph DB File] [Query File] [Number of threads]
+java -jar VF2-Scala.jar [Graph DB File] [Query File] [Number of threads] [Verbose]
 ```
 
 For example:
 
 ```bash
- java -jar VF2-Scala.jar mygraphdb.data Q4.my 8
+ java -jar VF2-Scala.jar mygraphdb.data Q24.my 8 true
 ```

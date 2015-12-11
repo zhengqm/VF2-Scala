@@ -55,7 +55,7 @@
 VF2简介
 
 在本项目中，我使用了Scala语言完成了VF2算法的实现，并尝试将批量查询进行并行化处理以提高运行效率。
-本报告将对算法的实现方式、所使用数据等方面进行介绍。Section ？介绍了算法所使用的数据结构，。。。
+本报告将对算法的实现方式、所使用数据等方面进行介绍。Section 2介绍了算法所使用的数据结构，Section 3介绍了算法实现的思路，Section 4介绍了对批量匹配的并行化处理。
 
 项目地址： https://github.com/zhengqm/VF2-Scala
 
@@ -157,7 +157,7 @@ def generateCandidatePairs() = {
 
 在此基础上，只需将论文中的算法主流程简单的翻译为一个递归调用自身的函数即完成了对算法的实现。总体而言，VF2算法的核心是将图的匹配过程抽象为状态转移的过程，并给出了图同构问题的多个限定条件，我们使用一系列集合操作将这些限定条件进行了实现。
 
-\sectoin{Parallel Execution}
+\section{Parallel Execution}
 
 在完成对算法的基本实现后，作业要求对给定的图数据库文件面向查询图进行批量匹配。
 
@@ -175,7 +175,7 @@ printResult(qGraph.graphID, qResult)
 \begin{thebibliography}{9}
 
 \bibitem{vf2}
-   Luigi P. Cordella,Pasquale Foggia,Carlo Sansone,Mario Vento: \emph{A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs.} IEEE Trans. Pattern Anal. Mach. Intell. 26(10): 1367-1372 (2004)
+   Luigi P. Cordella,Pasquale Foggia,Carlo Sansone,Mario Vento:\emph{A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs.} IEEE Trans. Pattern Anal. Mach. Intell. 26(10): 1367-1372 (2004)
 
 \end{thebibliography}
 

@@ -91,16 +91,20 @@ object Utils {
     }
   }
 
-  def printResult(id: Int, foundList: List[Found]) = {
+  def printResult(id: Int, foundList: List[Found], verbose:Boolean) = {
     println(s"Graph query $id")
     foundList.foreach {
         case Iso(origin, mapping) => {
           println(s"Iso with $origin")
-          //println(mapping.mkString("  "))
+          if (verbose) {
+            println(mapping.mkString("  "))
+          }
         }
         case SubIso(origin, mapping) => {
           println(s"SubIso with $origin")
-          //println(mapping.mkString("  "))
+          if (verbose) {
+            println(mapping.mkString("  "))
+          }
         }
 
     }
