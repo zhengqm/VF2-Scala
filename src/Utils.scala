@@ -92,23 +92,26 @@ object Utils {
   }
 
   def printResult(id: Int, foundList: List[Found], verbose:Boolean) = {
-    println(s"Graph query $id")
-    foundList.foreach {
+    println(s"Graph query $id:")
+    if (foundList.isEmpty) {
+      println("No match found")
+    } else {
+      foundList.foreach {
         case Iso(origin, mapping) => {
-          println(s"Iso with $origin")
+          println(s"Isomorphic with Graph $origin")
           if (verbose) {
             println(mapping.mkString("  "))
           }
         }
         case SubIso(origin, mapping) => {
-          println(s"SubIso with $origin")
+          println(s"Sub-Isomorphic with Graph $origin")
           if (verbose) {
             println(mapping.mkString("  "))
           }
         }
 
+      }
     }
-
   }
 
 }
