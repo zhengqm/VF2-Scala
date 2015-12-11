@@ -33,8 +33,8 @@ package vf2 {
 
     def main(args: Array[String]) {
       if (args.size != 4) {
-        println("Usage: java -jar VF2-Scala.jar [Graph DB File] [Query File] [Number of threads]")
-        println("Example: java -jar VF2-Scala.jar mygraphdb.data Q4.my 8")
+        println("Usage: java -jar VF2-Scala.jar [Graph DB File] [Query File] [Number of threads] [Verbose]")
+        println("Example: java -jar VF2-Scala.jar mygraphdb.data Q24.my 8 true")
         return
       }
 
